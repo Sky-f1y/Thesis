@@ -233,108 +233,40 @@ of invalid programs---reveal limits not visible in general coding benchmarks.
 
 = Literature Review <chap-lit-review>
 
-This chapter situates the present study within formal language theory, compiler
-construction, tree comparison algorithms, and the rapidly growing literature on
-large language models for code. Rather than summarizing sources in isolation, the
-review compares methodological assumptions, highlights disagreements in the
-literature, and identifies the gap that derivation-tree evaluation addresses.
+In this chapter we will review already existing research that this study is based on. Instead of just listing the resources, we will compare the differences. How our reaserch differs from existin ones and what problem this study aims to solve. 
 
 == Formal Language Theory and Context-Free Grammars
 
-A formal grammar $G = (V, Sigma, P, S)$ consists of a finite set of non-terminal
-symbols $V$, terminal alphabet $Sigma$, production set $P$, and start symbol $S$.
-A context-free grammar (CFG) restricts productions to the form $A arrow alpha$
-where $A in V$ and $alpha in (V union Sigma)^*$ #cite(2). Chomsky's seminal
-analysis demonstrated that finite-state and simple phrase-structure models are
-insufficient for natural languages and motivated hierarchical grammatical
-descriptions that foreshadow modern CFG-based parsing #cite(1).
+A formal grammar $G = (V, Sigma, P, S)$ consists of a finite set of non-terminal symbols $V$, a terminal alphabet $Sigma$, a production set $P$, and a start symbol $S$. A context-free grammar (CFG) restricts productions to the form $A arrow alpha$ where $A in V$ and $alpha in (V union Sigma)^*$ #cite(2). Chomsky showed that simple grammar models were not enough. This led to layered, nested grammar structures, which became the origins of CFG-based parsing #cite(1). 
 
-The Chomsky hierarchy classifies grammars by generative power; programming
-languages are typically specified by CFGs plus lexical rules #cite(2, 3).
-Hopcroft, Motwani, and Ullman provide the standard automata-theoretic treatment
-of recognition, while Aho, Lam, Sethi, and Ullman (*Compilers: Principles,
-Techniques, and Tools*) connect grammars to lexical analysis, parsing, and the
-construction of syntax trees in production compilers #cite(3).
+The Chomsky hierarchy classifies grammars by generative power. Programming languages are typically specified by CFGs plus lexical rules #cite(2, 3). Hopcroft, Motwani, and Ullman explain the theory of how machines recognise languages. Aho, Lam, Sethi, and Ullman (*Compilers: Principles, Techniques, and Tools*) connect grammars to how compilers actually work. Including how they break code into pieces to build syntax trees. #cite(3).
 
-The C0 grammar used in this thesis---as defined in Paul et al. #cite(46) and
-operationalized in the KIU course materials (`instruction.txt`)---is a CFG
-extended with lexical productions for identifiers, digits, and character
-constants. Unlike English or other natural
-languages, programming languages are deliberately designed to be unambiguous at
-the syntactic level; a parser implementation therefore expects a unique derivation
-structure for each valid program, modulo documented implementation choices.
+The C0 grammar used in this thesis, as defined in Paul et al. #cite(46), is a set of rules that define what valid code looks like. Unlike Georgian or other natural languages, programming languages are designed to be unambiguous. The parser always expects one unique, clear structure for each valid program.
 
 == Derivation Trees, Parse Trees, and Abstract Syntax Trees
 
-A *derivation* is a sequence of production applications transforming the start
-symbol into a terminal string. A *derivation tree* (parse tree) records this
-process hierarchically: internal nodes are non-terminals, leaves are terminals,
-and each parent--child group corresponds to one production's right-hand side
-#cite(3). For unambiguous grammars, leftmost and rightmost derivations induce the
-same tree shape.
+A *derivation* is a process of apling prammar rules to turn a start symbol into a terminal string. A *derivation tree* (parse tree) is just a visualization of this process. The branches represent grammar rules, and leaves are the actual words/symbols #cite(3). For unambiguous grammars, no matter which order you apply the rules, you always end up with the same tree.
 
-Compiler textbooks distinguish parse trees from *abstract syntax trees* (ASTs),
-which collapse syntactically redundant nodes (e.g., grouping parentheses) to
-expose program meaning #cite(3). Benchmarks such as CodeSyntax #cite(20) and
-CodeBLEU #cite(30) often evaluate structural similarity at the AST level. This
-thesis deliberately requires *fully expanded derivation trees*: every
-non-terminal must be resolved to terminal leaves, including letter-by-letter name
-expansion and digit-by-digit numeric constants. That stricter criterion aligns
-with how grammar rules are taught in compiler courses and exposes errors that
-AST-level or token-level metrics would conceal.
+parse trees and *abstract syntax trees* (ASTs) are similar, but ASTs skip some "unnecessary" details. They focus on the meaning of the code rather than the exact syntax #cite(3). Standard tools such as CodeSyntax #cite(20), and CodeBLEU #cite(30) often evaluate structural similarity at the AST level. However, this thesis requires fully expanded derivation trees. This approach is stricter and catches mistakes that AST would have missed.
 
 == Compiler Construction and Pedagogical C0 Dialects
 
-Compiler front ends implement lexical analysis (tokenization) followed by
-syntactic analysis (parsing) #cite(3). Pedagogical language subsets reduce
-semantic complexity so students can focus on parsing and code generation.
-Carnegie Mellon's C0 was introduced as a safe, contract-oriented imperative
-language for introductory computation courses #cite(4, 5). Arnold's technical
-report documents design goals: eliminate undefined behavior, support formal
-reasoning, and keep syntax close to C while remaining amenable to automated
-checking #cite(4).
+Compilers first break code into smaller pieces (lexical analysis) and then figure out the structure(parsing) #cite(3). Simplified versions make it easy to learn parsing and code generation. Carnegie Mellon's C0 is one example. It is designed to be simple and safe for introductory computation courses #cite(4, 5).
 
-C0 dialects also appear extensively in Chinese university compiler curricula,
-where students implement recursive-descent parsers and code generators for course
-projects #cite(34). The KIU variant evaluated here takes its grammar from Paul et
-al.'s *System Architecture* textbook #cite(46), which co-author Wolfgang J. Paul
-taught at KIU; the reference C0 compiler from a prior KIU bachelor's thesis
-#cite(33) implements that specification. The dialect extends the book's C
-subset with typedefs, structs, and pointer notation using `'` (dereference) and
-`&` (address-of). This notation creates a deliberate ambiguity
-with multiplication (`*`) that tests whether a system applies disambiguation rules
-rather than surface token co-occurrence statistics.
+The specific version of C0 used in this thesis comes from Paul et al.'s *System Architecture* text book #cite(46). Previous KIU students have built the compiler for this specific C0 #cite(33) under the supervision of coauthor Wolfgang J. Paul. This version of C0 adds some extra features like typedef, struct, and pointers. It also uses different symbols for pointers (') instead of the usual (`*`). This was done on purpose to test if the system actually understands the grammar rule. In our reaserch we left the grammar unchanged deliberately to test the LLMs reasoning. 
+
 
 == Probabilistic Models of Code and the Limits of Token-Level Learning
 
-Allamanis, Barr, Devanbu, and Sutton survey the *naturalness* hypothesis: source
-code, like natural language, exhibits strong statistical regularities that
-machine learning models can exploit #cite(12). The survey taxonomy spans n-gram
-models, tree-based models, and neural architectures, and documents applications
-from completion to bug detection. However, the authors also emphasize that
-programming languages possess formal semantics and rigid syntactic constraints
-that distinguish them from free-form text.
+Allamanis, Barr, Devanbu, and Sutton proposed the *naturalness* hypothesis: code, similar to human language, follows patterns that AI can learn from #cite(12). They tested different models, from statistical ones to neural networks. They found out that AIs can be used for things like auto-completing code or fixing bugs. They also pointed out that codes have strict rules, unlike regular texts. 
 
-Subsequent benchmarks probe whether pre-trained models internalize these
-constraints. Feng et al.'s CodeBERT #cite(17) and Kanade et al.'s CuBERT
-#cite(18), trained on large corpora such as CodeSearchNet #cite(19), achieve
-strong results on retrieval and documentation tasks. Wang et al.'s CodeSyntax
-benchmark tells a different story for syntax understanding: when asked to predict
-syntactic relationships extracted from AST edges, CodeBERT and CuBERT *underperform*
-naive keyword-and-position baselines #cite(20). The authors conclude that
-massive code pre-training does not reliably encode explicit syntactic structure.
+Later research checked if AI models actually understood the code structure. Feng et al.'s CodeBERT #cite(17) and Kanade et al.'s CuBERT #cite(18), trained on a huge amount of code like CodeSearchNet #cite(19), are good at searching for code or generating documentation. But when tested on understanding syntax and grammar structures, they underperformed #cite(20). In conclusion, just training on a large amount of code doesn't mean it understands codes gramatical structure. 
 
-Velasco et al. apply causal analysis (SyntaxEval) to masked language models and
-report negative causal effects between AST node types and completion accuracy,
-suggesting that high token prediction scores can overestimate grammatical
-competence #cite(23). Ma et al. evaluate 21 LLMs on zero-shot syntax parsing,
-static analysis, and dynamic reasoning, finding a consistent hierarchy: strong
-AST-generation performance on simple tasks, weaker static analysis, and limited
-dynamic reasoning #cite(22). Together, these studies agree that *functional or
-token-level success does not imply faithful CFG reasoning*---a premise this
-thesis tests directly by requiring explicit derivation trees.
+Velasco et al. found that even the AI models that score high on code token prediction do not understand grammar properly #cite(23). Ma et al. tested 21 different AI models and found that they are decent at simple structured tasks. They get worse at static analysis and are quite poor at deeper reasoning and understanding #cite(22). Togethre all these studies suggest that doing well at the surface level doesn't mean AIs truly understand grammar rules. This thesis directly tests that idea by requiring models to produce full derivation trees. 
 
 == Code Generation Benchmarks and What They Measure
+
+Most common way to evaluate LLMs coding models is to check by runing tests on it 
 
 The dominant evaluation paradigm for code LLMs measures whether generated programs
 pass unit tests. Chen et al. introduce Codex and HumanEval (164 Python problems)
