@@ -999,26 +999,22 @@ snapshot of current LLM grammatical competence on a well-defined formal task.
 
 == Summary of Findings
 
-This thesis evaluated five large language models on C0 derivation tree generation
-under identical conditions. Key findings:
+Five large language models were evaluated in this thesis on C0 derivation tree generation under identical conditions. Key findings:
 
-+ No model achieves reliable formal correctness; at most 10 of 51 trees were fully
-  legal (Gemini), and only on the simplest programs.
-+ Claude Sonnet 4.6 produces the most reference-aligned trees overall (mean
-  structural 0.864).
-+ Gemini leads on standard-syntax structural similarity (0.908) but fails on
-  pointers (0.284).
-+ Pointer tasks are the primary discriminator; Claude handles them best.
++ Best result in terms of generating fully legal output was 10 out of 51(Gemini), and those succesful results came from deriving the simplest programs, which means no model achieves reliable formal correctness. 
++ The most consistent for generating the most reference-aligned trees is Claude Sonnet 4.6 (mean structural 0.864).
++ The best standard structural similarity was demonstrated by Gemini(0.908), but it failed on pointers.
++ All LLMs struggled with pointer tasks with ambiguity, Claude handled it the best among these 5 models.
 + Out-of-grammar inputs are not rejected; models invent derivations.
-+ DeepSeek-V3 is unsuitable for this task without substantial prompting changes.
++ DeepSeek-V3 showed the worst result among these 5 models.
+
+
 
 == Research Contributions
 
-+ A reproducible protocol for evaluating LLM grammar understanding via derivation
-  trees rather than executable code.
++ A reproducible protocol that evaluates LLMs understanding of grammar using derivation trees.
 + A Mermaid-based encoding standard enabling automated comparison.
-+ An open pipeline (`tree_diff_v2.html`, `run_tree_diff_v2.py`, dashboard)
-  combining Selkow distance with a C0 grammar oracle.
++ Pipeline(tree_diff_v2.html, dashboard) that uses Selkow distance alongside C0 grammar oracle.
 + Empirical comparison of five major LLMs on 51 stratified C0 programs with
   published CSV results.
 
@@ -1031,11 +1027,8 @@ under identical conditions. Key findings:
 + Test whether fine-tuning on grammar specifications improves legality.
 + Extend methodology to additional formal grammars, parser generators, and
   repository-scale benchmarks #cite(36).
-+ Integrate the comparison tool into compiler course auto-grading workflows.
 
-Formal grammars demand precision that current LLMs only approximate. Until fully
-legal derivation becomes the norm rather than the exception, AI-generated parse
-trees require automated verification before use in education or tooling.
+As fully legal derivation is exception rather than norm, without verification it's not safe to use AI-generated parse trees for tooling or education. Formal grammar needs precision and current LLMs can only approximate it.
 
 // ============================================================
 //  REFERENCES
