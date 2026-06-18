@@ -253,7 +253,7 @@ parse trees and *abstract syntax trees* (ASTs) are similar, but ASTs skip some "
 
 Compilers first break code into smaller pieces (lexical analysis) and then figure out the structure(parsing) #cite(3). Simplified versions make it easy to learn parsing and code generation. Carnegie Mellon's C0 is one example. It is designed to be simple and safe for introductory computation courses #cite(4, 5).
 
-The specific version of C0 used in this thesis comes from Paul et al.'s *System Architecture* text book #cite(46). Previous KIU students have built the compiler for this specific C0 #cite(33) under the supervision of coauthor Wolfgang J. Paul. This version of C0 adds some extra features like typedef, struct, and pointers. It also uses different symbols for pointers (') instead of the usual (`*`). This was done on purpose to test if the system actually understands the grammar rule. In our reaserch we left the grammar unchanged deliberately to test the LLMs reasoning. 
+The specific version of C0 used in this thesis comes from Paul et al.'s *System Architecture* text book #cite(46). Previous KIU students have built the compiler for this specific C0 #cite(33) under the supervision of coauthor Wolfgang J. Paul. This version of C0 adds some extra features like typedef, struct, and pointers. they also use different symbols for pointers (') instead of the usual (`*`). This was done on purpose to avoid ambiguity in compiling. In our reaserch we use the original grammar. 
 
 
 == Probabilistic Models of Code and the Limits of Token-Level Learning
