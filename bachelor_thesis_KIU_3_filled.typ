@@ -830,57 +830,27 @@ shows near-zero scores for DeepSeek due to runaway expansion.
 == Answers to Research Questions
 
 *RQ1 (Can LLMs correctly generate derivation trees for valid C0 programs?):*
-Partially. On standard tasks (1--44), mean structural similarity ranges from
-0.312 (DeepSeek) to 0.908 (Gemini). No model achieved fully legal trees on a
-majority of tasks. Gemini produced the most fully legal trees (10, all on simple constant and arithmetic tasks), followed by ChatGPT (4, one of them an out-of-grammar case); no model produced a fully legal tree on any pointer task.
-Models frequently generate trees with correct leaf sequences but invalid internal
-nodes, indicating surface-level rather than complete grammatical derivation.
+Partially. The best result for generating fully legal trees was produced by Gemini, by constructing 10 trees perfectly, which was done on the most simple tasks, followed by ChatGPT by 4 fully legal trees, where one of them was out-of-grammar case. So, none of them has achieved result of producing perfect trees for at least majority of the tasks. Mean structural similarity for stadard tasls(1-44) ranged from 0.312 (DeepSeek) to 0.908 (Gemini). On tasks with pointers there was no fully legal tree produced by any models. Results show that their derivation of trees was surface level and not complete grammar derivation as mostly they got leaf sequence correctly but struggled with internal nodes.
 
 *RQ2 (Which model is most similar to the reference compiler?):*
-Claude Sonnet 4.6 ranks first on mean structural similarity (0.864) and lowest
-edit distance (42.4). Gemini leads on normal-task structural similarity (0.908)
-but with higher variance. Claude provides the best overall balance of
-structural alignment and stability across categories.
+Claude Sonnet 4.6 showed the best result according to mean structural similarity(0.864) and lowest edit distance(42.4). Gemini produced best result on easy tasks with structural similarity of 0.908, but it had higher variance. To conclude, Claude provided best overal result and stability among all categories.
+
 
 *RQ3 (Pointer vs. multiplication disambiguation?):*
-Models struggle substantially. Pointer task structural similarity ranges from
-0.284 (Gemini) to 0.772 (Claude). Grok shows the weakest pointer legality
-(0.540). Common errors include applying `<T> -> <T> * <F>` to pointer
-dereference contexts or mishandling `'` and `&` in `<id>` productions. Claude
-demonstrates the best pointer handling; Gemini's large normal/pointer gap (0.908
-vs. 0.284) suggests pointer syntax requires qualitatively different reasoning.
+This was challenging task for all models. Structural similarity on these tasks ranges from 0.284 (Gemini) to 0.772 (Claude). In terms of legality Grok showed weakest result(0.540). The most common error was applying `<T> -> <T> * <F>` to pointer dereference contexts. Which suggests that these tasks required qualitatively different reasoning.
+
 
 *RQ4 (Response to invalid inputs?):*
-No model refused to generate a tree. All attempted derivations for Tasks
-49--51, inventing structures for `asm()` and `gpr()`. ChatGPT achieved fully
-legal status on Task 49 despite invalid input. Legality remains deceptively high
-(0.83--0.95 across models on OOG tasks) because invented nodes can satisfy local
-production patterns. Structural similarity to reference trees stays low
-(0.20--0.64), confirming that neither models nor references can faithfully
-parse these programs under the C0 grammar.
+All models tried to complete these tasks none of them refused to generate tasks which had elements outside of C0 grammar. Each of them attempted to create additional rules for asm() and gpr(). They had deceptively high(0.83–0.95)  across models, as they managed to satisfy local production patterns, ChatGPT has even achieved 1 fully legal status on Task 49. But their structural similarity remained low (0.20–0.64) confirming that neither model could perfectly parse these programs under C0 grammar.
+ 
 
 *RQ5 (Does high similarity imply deep understanding?):*
-Not necessarily. High structural similarity correlates with adherence to
-expected derivation paths on training-like constructs, but legality and
-structural scores diverge: Grok achieves border-correct leaf sequences on 20
-normal tasks with zero fully legal trees. ChatGPT derives correct program text
-in 23 cases while only 4 trees are fully legal. High similarity on simple tasks
-combined with collapse on pointers and invented rules for OOG inputs indicates
-pattern recognition over explicit grammar rule application. True understanding
-would imply consistent fully legal trees, reliable rejection of ungrammatical
-input, and stable performance across syntactic categories.
+Not neccessarily. High structureal similarity doesn't indicate that LLM understands grammar, it shows that it can produce derivation trees that are similar to correct ones by recognizing patterns, but legality and structural scores diverge: Grok produced correct border-correct leaf sequences 20 times with zero fully legal trees, ChatGPT produced correct program in 23 cases and only 4 were fully legal. The fact that they had better performance on simple tasks and invented rules for OOG inputs indicates pattern recognition over understanding of grammar rules. 
+
 
 == Why Some Models Performed Better
 
-Claude's advantage likely stems from stronger instruction-following for
-hierarchical structured output and more conservative tree expansion, yielding
-lower edit distance and smaller illegal-node counts. Gemini excels on familiar
-in-grammar patterns (high normal-task similarity) but fails to generalize
-pointer notation. ChatGPT optimizes for deriving the correct terminal string
-(border metric) even when internal structure is wrong---useful for program text
-recovery but insufficient for formal grading. DeepSeek's runaway expansion
-suggests difficulty controlling recursive production application under length
-pressure.
+One possible explanation is that Claude is more focused on following instructions. It has more structured outputs and its approach to tree expansion is more conservative. It also yields lower edit distance and smaller illegal-node counts.  Gemini does better on familiar grammar patterns but fails in generalization, ChatGPT prioritizes producing the correct terminal string even when internal structure is not correct and DeepSeek's expansions suggest that it cannot properly handle recursive production under length pressure.
 
 == Common Error Patterns
 
@@ -904,32 +874,18 @@ pressure.
 
 == Comparison with Prior LLM Evaluation Paradigms
 
-Relative to execution-based benchmarks #cite(15, 16, 35), the present study
-trades functional completeness for grammatical transparency. A model may achieve
-high pass@$k$ on HumanEval while failing to expand `<DiS>` digit-by-digit, as
-observed for several models here. Relative to syntax probes #cite(20, 23), this
-evaluation requires *generating* entire trees rather than classifying AST
-relations, a strictly harder task. Relative to constrained decoding research
-#cite(24, 25, 26), models receive no decoder-side grammar enforcement; failures
-therefore reflect unconstrained competence.
+In contrast to execution-based benchmarks #cite(15, 16, 35), which assess 
+whether code works, this paper is concerned with grammatical transparency 
+rather than functional completeness. A program may achieve good results in the `pass@k` metric of HumanEval but fail to expand <DiS> symbol-by-symbol, which was seen 
+in multiple models tested in this research. Unlike syntax probes #cite(20, 23), this task is more challenging because instead of classifying relations, LLMs must construct full derivation tree. Relative to constrained decoding research #cite(24, 25, 26), models receive no decoder-side grammar enforcement, which indicates that failuers here reflect unconstrained competence. 
 
-ChatGPT's comparatively high border-correct derivation count (23 programs) echoes
-findings that LLMs often preserve surface token sequences even when internal
-structure is wrong #cite(22, 31)---analogous to CodeSyntax models matching
-keywords without faithful syntax graphs #cite(20).
+Relatively high number of border-correct derivation trees were produced by ChatGPT(23) which strengthens the earlier finding that LLMs are focused on preserving surface token sequence even if internal structure is not correct #cite(22, 31). 
+
+
 
 == Genuine Understanding versus Pattern Matching
 
-The evidence favors statistical pattern matching supplemented by format
-heuristics over explicit grammar manipulation #cite(27, 29). Models produce
-Mermaid graphs resembling parse trees seen in training data but do not
-consistently apply the provided production set. The disconnect between border
-correctness and legality, the OOG paradox, and pointer-specific collapse mirror
-Mirzadeh et al.'s observation that small input perturbations destabilize
-apparently competent reasoning #cite(27), and Velasco et al.'s finding that
-syntax-aware causal effects can be weak or negative for code LMs #cite(23).
-These patterns are hallmarks of approximate syntactic modeling rather than
-verified CFG parsing #cite(3).
+Results suggest that LLMs chose to follow pattern matching over explicit grammar manipulation #cite(27, 29). They mimic training data instead of fully following provided productions. The legality gap, OOG paradox and pointer collapse confirm Mirzadeh et al. #cite(27) and Velasco et al. #cite(23) — approximate syntax modeling, not CFG parsing #cite(3).
 
 // ============================================================
 //  CHAPTER 7 — THREATS TO VALIDITY
