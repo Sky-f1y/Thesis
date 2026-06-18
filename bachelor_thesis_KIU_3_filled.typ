@@ -164,7 +164,7 @@ Compiler construction is built on the study of formal languages: a programming l
 
 The C0 programming language evaluated in this thesis is taken from *System Architecture: An Ordinary Engineering Discipline* #cite(46), a textbook by Petro Lutsyk, Sabine Schmaltz, Wolfgang J. Paul, and Christoph Baumann. In this book, they specify a formal C subset for compiler-construction exercises. At Kutaisi International University (KIU), compiler courses adopt this grammar. Co-author Wolfgang J. Paul taught the material at the university himself. like other teaching-oriented C subsets, including Carnegie Mellon's C0 #cite(4, 5), C is reduced to simpler versiuon. This version is enough for students to learn parsing and code generation. With that said, constructing a derivation tree for the C0 grammar still remains a challenging task. It requires grammatical understanding that code generation cannot pass.
 
-Large language models (LLMs) score well on standard coding tests such as HumanEval #cite(15), and MBPP #cite(16). Those tests ask whether a program runs correctly, but not whether a model can follow an explicit context-free grammar step by step #cite(12, 20). Surveys of LLM-for-code research reach a similar conclusion: most work still treats source code as a sequence of tokens and focuses on software engineering tasks rather than formal parsing #cite(12, 32). This becomes a bigger problem as LLMs are increasingly used in education and compiler tooling. That gap matters as LLMs move into education and compiler tooling, where it is unclear whether a model truly understands grammar rules or only reproduces syntactic patterns that look plausible #cite(27). This thesis addresses that question by directly testing LLMs' abilities.
+Large language models (LLMs) score well on standard coding tests such as HumanEval #cite(15), and MBPP #cite(16). Those tests ask whether a program runs correctly, but not whether a model can follow an explicit context-free grammar step by step #cite(12, 20). Surveys of LLM-for-code research reach a similar conclusion: most work still treats source code as a sequence of tokens and focuses on software engineering tasks rather than formal parsing #cite(12, 32). This becomes a bigger problem as LLMs are increasingly used in education and compiler tooling. That gap matters as LLMs move into education and compiler tooling. There it becomes unclear whether a model truly understands grammar rules or only reproduces syntactic patterns that look plausible #cite(27). This thesis addresses that question by directly testing LLMs' abilities.
 
 
 == Research Questions
@@ -179,12 +179,9 @@ This study is guided by five research questions:
 
 == Research Aim and Objectives
 
-The primary aim is to evaluate and compare the grammatical competence of
-selected LLMs in generating C0 derivation trees under controlled, identical
-conditions. Specific objectives are:
+Our main goal is to test how well the Large Language models can create the derivation trees for C0 grammar. All the LLMs are tested under the same exact instructions. goal are:
 
-+ To define a reproducible evaluation framework (grammar, format standard, test
-  corpus, comparison pipeline).
++ To create a reproducible testing framework(grammar, format standard, test programs).
 + To collect derivation tree outputs from five LLMs for 51 test programs.
 + To compare each output against the reference compiler's trees using Selkow's
   tree edit distance and grammar-legality metrics.
