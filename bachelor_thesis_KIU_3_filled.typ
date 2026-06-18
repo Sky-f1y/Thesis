@@ -423,13 +423,10 @@ increasingly assumed but rarely measured in educational deployments.
 
 == Research Design
 
-The independent variable is the LLM; all other conditions are held constant. The
-evaluated systems are general-purpose transformer-based models #cite(13, 14) accessed
-via their public APIs in June 2026.
+The independent variable is the LLM and all other conditions remain unchanged. The evaluated systems are general-purpose transformer-based models #cite(13, 14)accessed via their public chat interfaces.
 
 === Experimental Protocol
-
-For each of 51 tasks, every model received (`instruction.txt`):
+For each task each model has recieved(`instruction.txt`):
 
 + The complete C0 grammar (lexical, expression, statement, and program rules) #cite(46).
 + The C0 Derivation Tree Output Format (v2) specifying Mermaid conventions.
@@ -461,12 +458,8 @@ follow-up corrections were applied. Each model was queried once per task.
 
 === Ground-Truth Generation
 
-Reference derivation trees were produced by the reference C0 compiler from a prior
-KIU bachelor's thesis #cite(33). Files in `generated_trees/` pair each test
-program (`.c0`) with a Mermaid tree (`.mmd`), named with zero-padded task numbers
-(e.g., `01_single_int_max_constant.mmd`). These reference trees may include `&nbsp;` spacing
-nodes and end-of-input markers absent from the AI format spec; the comparison tool
-removes these during normalization #cite(6).
+Reference derivation trees were provided by the C0 compiler from a prior KIU bachelor's thesis #cite(33). We modified the derivation tree generator file so it also could give us outputs in mermaid format (`.mmd`). Unique attributes for original code such as spacing nodes and end of input markers which are outisde from LLMs context are handled during normalization.
+
 
 == Dataset Preparation and Test Design
 
@@ -476,7 +469,7 @@ categories:
 === Category A: Standard C0 Syntax (Tasks 1--44)
 
 Forty-four programs exercising constants, arithmetic, comparisons, arrays, loops,
-conditionals, recursion, and typedefs---from simple assignments to GCD and
+conditionals, recursion, and typedefs from simple assignments to GCD and
 power functions.
 
 === Category B: Pointer Programs (Tasks 45--48)
@@ -490,7 +483,7 @@ construction. These probe whether models distinguish `'` (dereference) from `*`
 
 Three programs with constructs absent from the C0 grammar: inline assembly
 `asm(...)`, general-purpose register access `gpr(1)`, and combined usage. These
-test whether models refuse invalid input or invent productions.
+test how well can LLMs handle situations where they do not have full context.
 
 #figure(
   table(
@@ -508,8 +501,7 @@ test whether models refuse invalid input or invent productions.
 
 == Prompt Engineering
 
-The prompt bundle deliberately minimizes ambiguity while avoiding examples that
-could leak reference structures:
+The prompt is designed to minimize ambiguity and explain output structure without revealing hints that might have impact on output quality:
 
 - Grammar and format rules are provided verbatim.
 - Models are told structure comes entirely from the grammar; the format document
@@ -517,8 +509,7 @@ could leak reference structures:
 - Terminal values must be separate leaf nodes; names and numbers fully expanded.
 - The closing line discourages refusal: "don't ask questions just draw the tree."
 
-This design tests whether models comply with formal constraints under pressure to
-produce output for every input, including invalid programs.
+This design serves to test LLMs capability of how well they can complete the task while they have to comply with formal constraint of producing output for every input.
 
 == Evaluation Metrics
 
@@ -544,12 +535,7 @@ collapsed leaves, remove noise nodes, match terminal values in signatures.
 
 == Tree Comparison Process
 
-A Python script (`run_tree_diff_v2.py`) automates batch comparison via
-Playwright: for each task, it loads reference and candidate `.mmd` files into
-`tree_diff_v2.html`, triggers comparison, and appends one CSV row per task to
-`results/`. The dashboard (`c0_derivation_tree_thesis_dashboard.html`)
-visualizes the same CSV data. Figures in Chapter 5 are exported from the
-dashboard to `figures/` (adapted for print layout).
+The script `tree_diff_v2.html` runs manually in browser. After comparison it displays statistics alongside visualization of both, LLMs generated and reference trees. It accumulates all data from comparisons and exports as CSV which we use for research.
 
 // ============================================================
 //  CHAPTER 4 — IMPLEMENTATION
