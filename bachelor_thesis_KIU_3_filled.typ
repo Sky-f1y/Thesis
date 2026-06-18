@@ -905,57 +905,34 @@ verified CFG parsing #cite(3).
 
 == Internal Validity
 
-*Limited test cases:* 51 programs, with only 4 pointer and 3 OOG cases, cannot
-exhaust the C0 grammar. Results may not generalize to unseen constructs.
+*Limited test cases:* 51 programs are not enough to cover full C0 grammar. Especially with only 4 pointer and 3 OOG cases. Results may not be true for other types of programs.
 
-*Single run per task:* No measurement of stochastic variance; a model might
-succeed on retry.
+*Single run per task:* each task was only run once. With this approach, there is no way of knowing if the LLM would do better or worse on the second try.
 
-*Prompt sensitivity:* The instruction to never refuse input biases models toward
-forced derivation, potentially understating refusal capability. Grammar-constrained
-decoders #cite(25, 37) and explicit error-reporting prompts could yield different
-refusal rates on Tasks 49--51.
+*Prompt sensitivity:* LLMs were instructed to never refuse a task, which pushed them to generate even when they shouldn't have. Grammar-constrained decoders #cite(25, 37) and explicit error-reporting prompts could have had different results on tasks 49-51.
 
-*Model versioning:* Results reflect June 2026 model snapshots; updates may change
-performance, as benchmark rankings have shifted with model generations #cite(31).
+*Model versioning:* These results reflect only up to June 2026. Future updates may yield different results.  As benchmark rankings have shifted with model generations #cite(31).
 
 == Construct Validity
 
-*Mermaid as proxy:* Trees are compared after parsing Mermaid syntax, not direct
-grammar objects. Malformed Mermaid or idiosyncratic node ordering could affect
-scores independent of grammatical knowledge.
+*Mermaid as proxy:* The trees are compared through mermaid code, not directly as grammar object. If the model formats the Mermaid code incorrectly of could hurt the score, even if the grammar knowlage was actually correct.
 
-*Similarity metric limitations:* Selkow distance #cite(6) penalizes alternative
-valid derivations equally, as documented in tree-edit surveys #cite(9). A
-grammatically correct but non-canonical tree scores lower than warranted. Zhang
-and Shasha's metric #cite(8) would behave similarly with respect to derivation
-ambiguity.
+*Similarity metric limitations:* Selkow distance #cite(6) penalizes alternative valid derivations equally, as documented in tree-edit surveys #cite(9). A grammatically correct but differently structured tree gets scored lower than deserved. Zhang and Shasha's metric #cite(8) would behave similarly for derivation ambiguity.
 
-*Legality oracle coverage:* The JavaScript production table may not capture every
-edge case of the prose grammar; discrepancies between oracle and human judgment
-are possible, as noted in prior grammar-constrained systems #cite(24).
+*Legality oracle coverage:* The JavaScript production table may not capture every edge case of the C0 grammar. disagreements would appear between oracle and human judgment, as noted in prior grammar-constrained systems #cite(24).
 
 == External Validity
 
-*Single language:* C0-specific syntax (especially `'` pointers) limits
-generalization to other languages.
+*Single language:* this reaserch test only one C0. These findings may not apply to other programming languages.
 
-*Educational subset:* C0 is pedagogical; industrial grammars are larger and
-more ambiguous.
+*Educational subset:* C0 is simplified languages designed for learning purposes. Real-World languages are much bigger and more complex. Therefore, results might be different from this research. 
+
 
 == Conclusion Validity
 
-*Ground-truth dependence:* Reference trees reflect the reference parser's derivation choices. Different
-parser implementations might choose alternate valid derivations, affecting
-structural scores without indicating model error.
+*Normalization effects:* Flattening and noise removal align reference and candidate trees but alter raw structures. Sensitivity to these options was not fully researched.
 
-*Normalization effects:* Flattening and noise removal align reference and
-candidate trees but alter raw structures; sensitivity to these options was not
-fully ablated.
-
-Despite these threats, the controlled multi-model design, dual metrics
-(structural + legality), and category-stratified analysis provide a credible
-snapshot of current LLM grammatical competence on a well-defined formal task.
+Despite these limitations, the study is still reliable as it tested multiple LLM models under the same conditions. Research uses two different matrices (structure + grammar correctness) and analyzes results across different task categories. All this gave solid results of how well current AI models handle formal grammar.
 
 // ============================================================
 //  CHAPTER 8 — CONCLUSION
