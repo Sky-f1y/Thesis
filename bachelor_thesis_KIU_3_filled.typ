@@ -260,29 +260,11 @@ Velasco et al. found that even the AI models that score high on code token predi
 
 == Code Generation Benchmarks and What They Measure
 
-Most common way to evaluate LLMs coding models is to check by runing tests on it 
+The most common way to evaluate LLMs' coding models is to check if it passes the unit tests. Chen et al. introduce Codex and HumanEval (164 Python problems) with the pass@$k$ metric #cite(15). Austin et al. contribute MBPP (974 crowd-sourced problems), showing that model size is not everything. What data was trained on matters equally as much #cite(16). Li et al.'s APPS pushed difficulty further using competition-level programming tasks #cite(35). Liu et al. showed that making tests stricter was enough to change which model became better. Which proved that way you test matters just as much #cite(31).
 
-The dominant evaluation paradigm for code LLMs measures whether generated programs
-pass unit tests. Chen et al. introduce Codex and HumanEval (164 Python problems)
-with the pass@$k$ metric #cite(15). Austin et al. contribute MBPP (974
-crowd-sourced problems), showing that synthesis quality scales with model size but
-also depends heavily on pre-training data and method #cite(16). Li et al.'s APPS
-benchmark extends difficulty to competition-level problems #cite(35). Liu et al.
-demonstrate that augmenting HumanEval with stricter testing changes model rankings,
-underscoring benchmark sensitivity #cite(31).
+These benchmarks transformed LLMs' coding research, but the only measure was whether the code worked. They didn't test whether it was grammatically correct. A program could pass tests but be grammatically incorrect, or the other way around. Gong et al.'s SAFIM got closer to testing structure by focusing on syntax #cite(21). But this still only focused on code fragments rather than complete derivation trees. 
 
-These benchmarks revolutionized code LLM research but evaluate *outcomes*, not
-*derivations*. A program may pass tests while being syntactically ill-formed
-relative to a course grammar, or vice versa. Gong et al.'s SAFIM benchmark moves
-closer to structure by evaluating syntax-aware fill-in-the-middle completions across
-control-flow and API-call boundaries #cite(21), yet still measures generated code
-fragments rather than complete parse trees tied to a fixed production system.
-
-Hou et al.'s systematic literature review of LLMs for software engineering
-catalogues hundreds of studies but notes that formal grammar compliance and
-parser-generated artifacts remain underrepresented relative to generation and
-repair tasks #cite(32). The present thesis therefore complements execution-based
-benchmarks with a grammar-faithful structural evaluation.
+Hou et al.'s systematic literature review of LLMs for software engineering found hundreds of studies. He notes that very few of them focus on formal grammar correctness or parser-generated structures #cite(32). Most research is about generating or fixing code. This thesis tries to fill the gap by adding grammar-based structural evaluation.  
 
 == Grammar-Constrained Decoding and Reliable Structured Generation
 
