@@ -179,25 +179,23 @@ This study is guided by five research questions:
 
 == Research Aim and Objectives
 
-Our main goal is to test how well the Large Language models can create the derivation trees for C0 grammar. All the LLMs are tested under the same exact instructions. goal are:
+The Purpose of our research is to test the capabilities of Large Language Models in terms of constructing the derivation trees for C0 grammar. During testing we use the same instructions for all LLMs. The goals of this research are:
 
-+ To create a reproducible testing framework(grammar, format standard, test programs).
-+ To collect derivation tree outputs from five LLMs for 51 test programs.
-+ To compare each output against the reference compiler's trees using Selkow's
-  tree edit distance and grammar-legality metrics.
-+ To analyze performance across standard, pointer, and out-of-grammar categories.
-+ To identify recurring error patterns and interpret results in terms of formal
-  understanding versus pattern matching.
++ To create a reproducible testing framework(grammar, standard format, test programs).
++ To collect  derivation tree outputs from LLMs for 51 test programs.
++ To use Selkow's tree edit distance and grammar-legality metrics  for comparison of each output against the reference compiler's trees.
++ To analyze performance across standard, pointer and out-of-grammar categories.
++ To find recurring error patterns and interpret results in terms of formal understanding versus pattern matching.
 
 == Research Subject and Scope
 
-The research subject is syntactic derivation of C0 programs represented as
-directed Mermaid graphs. Scope boundaries:
 
-- *Language:* C0 as defined in `instruction.txt`, following the grammar of Paul et al. #cite(46).
+The subject of this research is syntactic derivation of C0 programs, with derivation trees represented as directed Mermaid graphs. Scope boundaries:
+
+- *Language:* C0, following the grammar of Paul et al. #cite(46).
 - *Output format:* Mermaid `graph TD` per the v2 format specification.
 - *Models:* ChatGPT (GPT-5.5), Gemini 3.5 Flash, Claude Sonnet 4.6,
-  Grok 4.6 Fast, DeepSeek-V3---one run per task, no few-shot examples.
+  Grok 4.6 Fast, DeepSeek-V3.
 - *Test corpus:* 44 in-grammar programs, 4 pointer programs, 3 out-of-grammar
   programs (`accepted C0 lines.txt`).
 - *Ground truth:* Reference trees in `generated_trees/` from the reference C0 compiler.
@@ -205,12 +203,7 @@ directed Mermaid graphs. Scope boundaries:
 
 == Practical Significance
 
-Reliable derivation tree generation supports compiler education, automated
-syntax grading, and formal assessment of AI systems. The Mermaid-based pipeline
-developed here is human-readable, version-controllable, and reusable across
-models and grammar revisions. Conversely, systematic failure modes---invented
-symbols, incomplete lexical expansion, pointer confusion, and forced derivation
-of invalid programs---reveal limits not visible in general coding benchmarks.
+The pipeline which we have built generated easily readable, reusable outputs using mermaid diagrams and it also exposed where models break down. Invented symbols, that don't exist in the grammar, incomplete lexical expansions, confusion in rules related to pointer and forced invalid derivations. None of this is visible in typical coding benchmarks, that indicates that they are leaning on pattern matching and they lack structural understanding of the grammar. If we manage to generate reliable derivation trees, it can have real use cases like teaching conpiler concepts, automatically grading exercises and even evaluating AI systems formally.
 
 == Thesis Structure
 
@@ -226,6 +219,7 @@ of invalid programs---reveal limits not visible in general coding benchmarks.
 - *Chapter 8* concludes and recommends future work.
 - *Appendices* contain the grammar, format rules, test statements, and data
   locations.
+
 
 // ============================================================
 //  CHAPTER 2 — LITERATURE REVIEW
