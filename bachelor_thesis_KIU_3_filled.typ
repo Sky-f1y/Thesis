@@ -260,29 +260,11 @@ Velasco et al. found that even the AI models that score high on code token predi
 
 == Code Generation Benchmarks and What They Measure
 
-Most common way to evaluate LLMs coding models is to check by runing tests on it 
+The most common way to evaluate LLMs' coding models is to check if it passes the unit tests. Chen et al. introduce Codex and HumanEval (164 Python problems) with the pass@$k$ metric #cite(15). Austin et al. contribute MBPP (974 crowd-sourced problems), showing that model size is not everything. What data was trained on matters equally as much #cite(16). Li et al.'s APPS pushed difficulty further using competition-level programming tasks #cite(35). Liu et al. showed that making tests stricter was enough to change which model became better. Which proved that way you test matters just as much #cite(31).
 
-The dominant evaluation paradigm for code LLMs measures whether generated programs
-pass unit tests. Chen et al. introduce Codex and HumanEval (164 Python problems)
-with the pass@$k$ metric #cite(15). Austin et al. contribute MBPP (974
-crowd-sourced problems), showing that synthesis quality scales with model size but
-also depends heavily on pre-training data and method #cite(16). Li et al.'s APPS
-benchmark extends difficulty to competition-level problems #cite(35). Liu et al.
-demonstrate that augmenting HumanEval with stricter testing changes model rankings,
-underscoring benchmark sensitivity #cite(31).
+These benchmarks transformed LLMs' coding research, but the only measure was whether the code worked. They didn't test whether it was grammatically correct. A program could pass tests but be grammatically incorrect, or the other way around. Gong et al.'s SAFIM got closer to testing structure by focusing on syntax #cite(21). But this still only focused on code fragments rather than complete derivation trees. 
 
-These benchmarks revolutionized code LLM research but evaluate *outcomes*, not
-*derivations*. A program may pass tests while being syntactically ill-formed
-relative to a course grammar, or vice versa. Gong et al.'s SAFIM benchmark moves
-closer to structure by evaluating syntax-aware fill-in-the-middle completions across
-control-flow and API-call boundaries #cite(21), yet still measures generated code
-fragments rather than complete parse trees tied to a fixed production system.
-
-Hou et al.'s systematic literature review of LLMs for software engineering
-catalogues hundreds of studies but notes that formal grammar compliance and
-parser-generated artifacts remain underrepresented relative to generation and
-repair tasks #cite(32). The present thesis therefore complements execution-based
-benchmarks with a grammar-faithful structural evaluation.
+Hou et al.'s systematic literature review of LLMs for software engineering found hundreds of studies. He notes that very few of them focus on formal grammar correctness or parser-generated structures #cite(32). Most research is about generating or fixing code. This thesis tries to fill the gap by adding grammar-based structural evaluation.  
 
 == Grammar-Constrained Decoding and Reliable Structured Generation
 
@@ -599,15 +581,10 @@ Grammar checker runs separately. Here we see some interesting results. In some c
 
 #figure(
   image("figures/fig_pipeline.png", width: 82%),
-  caption: [full pipeline. Each C0 program is sent to the five
-  models along with the grammar and format rules (`instruction.txt`). In
-  parallel, code is parsed by the compiler. The candidate and reference trees are
-  then compared using `tree_diff_v2`. This uses the Selkow tree-edit distance with a
-  C0 grammar-validity oracle. The results are saved in tables and figures.],
+  caption: [full pipeline. Each C0 program is sent to the five models along with the grammar and format rules (`instruction.txt`). In parallel, code is parsed by the compiler. The candidate and reference trees are then compared using `tree_diff_v2`. This uses the Selkow tree-edit distance with a C0 grammar-validity. The results are saved in tables and figures.],
 ) <fig-pipeline>
 
-Each CSV row records task id, file names, timestamp, all validity counts,
-structural metrics, node counts, edit distance, and normalization flags.
+Each CSV row records task id, file names, timestamp, all validity counts, structural metrics, node counts, edit distance, and normalization flags.
 
 // ============================================================
 //  CHAPTER 5 — RESULTS
@@ -615,9 +592,7 @@ structural metrics, node counts, edit distance, and normalization flags.
 
 = Results <chap-results>
 
-Quantitative results were extracted from per-model CSV files in `results/`
-(June 17, 2026). Structural similarity is the primary metric for RQ1 and RQ2;
-legality and error counts support interpretive analysis.
+Quantitative results were taken from the result CSV files in `results/`. The main metric used to answer the research questions is structural similarity. How cloasly generated tree matches to original reference. Grammar legality and error counts are used as additional information to help explain results.
 
 == Overall Structural Similarity
 
@@ -636,13 +611,8 @@ legality and error counts support interpretive analysis.
   caption: [Structural similarity statistics across all 51 tasks ($n = 51$ per model).],
 )
 
-Claude Sonnet 4.6 ranks first on mean (0.864), median (0.890), minimum (0.545),
-and standard deviation (0.112, lowest variance among top performers). Gemini
-produced the most fully legal trees (10 of 51, all on simple constant and arithmetic
-programs) and frequently reached perfect structural similarity on them, but also
-recorded the lowest single-task minimum (0.176, on the out-of-grammar Task 50). DeepSeek-V3
-clusters near 0.31 with catastrophic failures on complex tasks (e.g., Task 35:
-structural 0.006, 70,070 candidate nodes vs. 241 reference nodes).
+Claude sonnet 4.6 performed best overall. It head highest average score and median score. Also lowest worst-case score and deviation. Gemini had the most correct trees on simple tasks, but completely failed on harder ones ( as low as 0.176). DeepSeek-V3 was performing poorly overall, consistently scoring lower. In one case, it even generated a tree with 70, 070 nodes when the tree needed only 241 nodes.    
+
 
 == Overall Model Performance Summary
 
@@ -657,21 +627,17 @@ structural 0.006, 70,070 candidate nodes vs. 241 reference nodes).
     [Grok 4.6 Fast], [0.730], [0.838], [85.1], [2], [20],
     [DeepSeek-V3], [0.313], [0.776], [2715.5], [0], [0],
   ),
-  caption: [Overall model performance across all 51 tasks (computed from `results/`). Border-correct counts tasks whose derived program string matches the reference, i.e. border similarity $>= 0.999$.],
+  caption: [Overall model performance across all 51 tasks (computed from `results/`). Border-correct counts tasks whose derived program string matches the reference. Meaning the tree may have had structural difference but still produced right code i.e. border similarity $>= 0.999$.],
 )
 
-Key aggregate findings (all 51 tasks):
+summery of key findings (all 51 tasks):
 
 - *Highest mean structural similarity:* Claude (0.864).
 - *Highest mean legality:* Claude (0.947) and Gemini (0.946).
 - *Lowest mean edit distance:* Claude (42.4).
-- *Most fully legal trees:* Gemini---10 of 51 (all on simple constant and arithmetic
-  tasks)---followed by ChatGPT (4: Tasks 22, 26, 27, 49), Grok (2), and Claude (1);
-  DeepSeek-V3 produced none.
-- *Most border-correct derivations ($"border" >= 0.999$):* ChatGPT (23), Grok
-  (20), Gemini (13), Claude (6), DeepSeek (0).
-- *Worst performer:* DeepSeek-V3 (mean structural 0.313, mean edit distance
-  2715.5, 16,167 illegal nodes total).
+- *Most fully legal trees:* Gemini - 10 of 51 (all on simple constant and arithmetic tasks), followed by ChatGPT (4: Tasks 22, 26, 27, 49), Grok (2), and Claude (1). DeepSeek-V3 produced none.
+- *Most border-correct derivations ($"border" >= 0.999$):* ChatGPT (23), Grok (20), Gemini (13), Claude (6), DeepSeek (0).
+- *Worst performer:* DeepSeek-V3 (mean structural 0.313, mean edit distance 2715.5, 16,167 illegal nodes total).
 
 == Performance by Test Category
 
@@ -700,11 +666,7 @@ Key aggregate findings (all 51 tasks):
   caption: [Category breakdown computed from CSV results files.],
 )
 
-On standard tasks, Gemini leads structural similarity (0.908); Claude is close
-(0.888) with lower edit distance. Pointer tasks reduce all models' scores; no
-model produced a fully legal pointer tree. Out-of-grammar tasks yield moderate
-legality (models invent plausible rules) but low structural alignment with
-reference trees (which also cannot parse these inputs faithfully).
+On normal tasks, Gemini scored best for structure similarity (0.908). Claud was right behind (0.888) but needed fewer fixes. Pointer tasks were hard for every model. None of them got a single pointer tree correct. For out-of-grammar, models got moderate scores. They all made up rules similar to the existing ones, but not quite correct. These results made sense as none of them were given rules for those tasks.
 
 == Error Type Totals
 
@@ -722,10 +684,7 @@ reference trees (which also cannot parse these inputs faithfully).
   caption: [Aggregate grammar-violation counts by type across all 51 tasks per model.],
 )
 
-Gemini is the only model that invented non-C0 non-terminal symbols (7 instances).
-DeepSeek's error totals (16,167 illegal nodes) exceed other models by two orders
-of magnitude, dominated by `noProduction` (14,006) and `unexpanded` (2,161)
-violations---systematic failure to follow the expansion rules.
+Gemini was the only model that made up grammar symbols that dont exist in C0. This happened 7 times. DeepSeek completely failed with 16,167 illegal nodes overall. This was mostly because it repeatedly failed basic rules for expressions, dominated by `noProduction` (14,006) and `unexpanded` (2,161) nodes. These mistakes weren't occasional, they where sistematic, widespread failures.
 
 == Structural Similarity by Category
 
@@ -734,49 +693,40 @@ violations---systematic failure to follow the expansion rules.
   caption: [Average structural similarity by test category for all five models (adapted from the results dashboard).],
 )
 
-Normal tasks cluster above 0.76 for four models (excluding DeepSeek). Pointer
-tasks show the steepest drop for Gemini (0.908 → 0.284). Claude remains most
-stable on pointers (0.772).
+On normal tasks, four models out of five, excluding deepSeek, scored above 0.76. Pointer task caused biggset drop for Gemini. It failed from 0.908 to 0.284. Claude handled pointer tasks the best, scoring around 0.772. 
 
 == Edit Distance by Category
 
 #figure(
   image("figures/fig2_edit_distance_by_category.png", width: 92%),
-  caption: [Average Selkow edit distance by category; DeepSeek-V3 omitted for scale (adapted from the results dashboard).],
+  caption: [Average Selkow edit distance by category; DeepSeek-V3 omitted for scale (From the results dashboard).],
 )
 
-Pointer tasks inflate edit distance for all models. Gemini's pointer average
-(427.2) exceeds Claude's (157.2) by nearly 3× despite higher normal-task
-performance.
+For pointer Tasks all models took more fixes to correct the trees. Gemini's performance dropped significantly on pointer tasks. It took him 3 times more fixes than Claude. Even though on normal tasks, Gemini outperformed Claude
 
 == Legality versus Structural Similarity
 
 #figure(
   image("figures/fig3_legality_structural_scatter.png", width: 92%),
-  caption: [Grammar legality versus structural similarity for all 255 task--model pairs, coloured by test category (adapted from the results dashboard).],
+  caption: [Grammar legality versus structural similarity for all 255 task-model pairs, coloured by test category ( from the results dashboard).],
 )
 
-Normal tasks (green) cluster upper-right. Pointer and out-of-grammar tasks often
-show high legality with low structural similarity---the *OOG paradox*: invented
-or alternate derivations can be locally grammatical yet structurally divergent
-from the reference.
+Normal tasks (green) performed well on both measures. Both pointer and out-of-grammar tasks show something interesting. They have high grammar corectness but low structural similarity. We called this *OOG paradox*. Meaning that, models can invent a tree that follows the grammar rules but still looks completely different from the correct reference. 
 
 == Per-Task Structural Heatmap
 
 #figure(
   image("figures/fig4_structural_heatmap.png", width: 92%),
-  caption: [Per-task structural similarity heatmap (5 models $times$ 51 tasks); dashed lines mark the pointer and out-of-grammar blocks (adapted from the results dashboard).],
+  caption: [Per-task structural similarity heatmap (5 models $times$ 51 tasks); dashed lines mark the pointer and out-of-grammar blocks (from the results dashboard).],
 ) <fig-heatmap>
 
-Tasks 45--48 (pointer block) and 49--51 (OOG) form consistent cold zones.
-DeepSeek's row is predominantly low across all tasks. Task 35 (GCD while-loop)
-shows near-zero scores for DeepSeek due to runaway expansion.
+Tasks 45 - 48 (pointer block) and 49 - 51 (OOG) where consistantly hard for all models. DeepSeek's row is consistently low across all tasks. Task 35 (GCD while-loop) shows a near-zero score because the model kept expanding the tree. It generated massiv tree with an unnecessary amount of nodes.
 
 == Model Profiles on Normal Tasks
 
 #figure(
   image("figures/fig5_radar_normal_tasks.png", width: 92%),
-  caption: [Normalized model profiles on standard (in-grammar) tasks across structural similarity, legality, edit-distance economy, and consistency (adapted from the results dashboard).],
+  caption: [Normalized model profiles on standard (in-grammar) tasks across structural similarity, legality, edit-distance economy, and consistency (From the results dashboard).],
 )
 
 == Most and Least Challenging Tasks
@@ -813,13 +763,11 @@ shows near-zero scores for DeepSeek due to runaway expansion.
 
 == Notable Individual Results
 
-- *Task 22 (ChatGPT):* Perfect metrics---legality 1.0, structural 1.0, edit
-  distance 0, fully legal.
-- *Tasks 26--27 (ChatGPT):* Perfect structural match on boolean comparisons.
-- *Tasks 38--39 (Grok):* Structural 1.0 on if-else min/max programs.
-- *Task 44 (GCD):* High edit distances---ChatGPT 448, Grok 328, DeepSeek 3058.
-- *Task 49 (ChatGPT):* Fully legal tree for `asm()` input despite construct
-  being out-of-grammar (legality 1.0 via invented valid-looking structure).
+- *Task 22 (ChatGPT):* Perfect metrics - legality 1.0, structural 1.0, edit distance 0, fully legal.
+- *Tasks 26 - 27 (ChatGPT):* Perfect structural match on boolean comparisons.
+- *Tasks 38 - 39 (Grok):* Structural 1.0 on if-else min/max programs.
+- *Task 44 (GCD):* High edit distances - ChatGPT 448, Grok 328, DeepSeek 3058.
+- *Task 49 (ChatGPT):* Fully legal tree for `asm()` input despite construct being out-of-grammar.
 
 // ============================================================
 //  CHAPTER 6 — DISCUSSION
@@ -895,57 +843,34 @@ Results suggest that LLMs chose to follow pattern matching over explicit grammar
 
 == Internal Validity
 
-*Limited test cases:* 51 programs, with only 4 pointer and 3 OOG cases, cannot
-exhaust the C0 grammar. Results may not generalize to unseen constructs.
+*Limited test cases:* 51 programs are not enough to cover full C0 grammar. Especially with only 4 pointer and 3 OOG cases. Results may not be true for other types of programs.
 
-*Single run per task:* No measurement of stochastic variance; a model might
-succeed on retry.
+*Single run per task:* each task was only run once. With this approach, there is no way of knowing if the LLM would do better or worse on the second try.
 
-*Prompt sensitivity:* The instruction to never refuse input biases models toward
-forced derivation, potentially understating refusal capability. Grammar-constrained
-decoders #cite(25, 37) and explicit error-reporting prompts could yield different
-refusal rates on Tasks 49--51.
+*Prompt sensitivity:* LLMs were instructed to never refuse a task, which pushed them to generate even when they shouldn't have. Grammar-constrained decoders #cite(25, 37) and explicit error-reporting prompts could have had different results on tasks 49-51.
 
-*Model versioning:* Results reflect June 2026 model snapshots; updates may change
-performance, as benchmark rankings have shifted with model generations #cite(31).
+*Model versioning:* These results reflect only up to June 2026. Future updates may yield different results.  As benchmark rankings have shifted with model generations #cite(31).
 
 == Construct Validity
 
-*Mermaid as proxy:* Trees are compared after parsing Mermaid syntax, not direct
-grammar objects. Malformed Mermaid or idiosyncratic node ordering could affect
-scores independent of grammatical knowledge.
+*Mermaid as proxy:* The trees are compared through mermaid code, not directly as grammar object. If the model formats the Mermaid code incorrectly of could hurt the score, even if the grammar knowlage was actually correct.
 
-*Similarity metric limitations:* Selkow distance #cite(6) penalizes alternative
-valid derivations equally, as documented in tree-edit surveys #cite(9). A
-grammatically correct but non-canonical tree scores lower than warranted. Zhang
-and Shasha's metric #cite(8) would behave similarly with respect to derivation
-ambiguity.
+*Similarity metric limitations:* Selkow distance #cite(6) penalizes alternative valid derivations equally, as documented in tree-edit surveys #cite(9). A grammatically correct but differently structured tree gets scored lower than deserved. Zhang and Shasha's metric #cite(8) would behave similarly for derivation ambiguity.
 
-*Legality oracle coverage:* The JavaScript production table may not capture every
-edge case of the prose grammar; discrepancies between oracle and human judgment
-are possible, as noted in prior grammar-constrained systems #cite(24).
+*Legality oracle coverage:* The JavaScript production table may not capture every edge case of the C0 grammar. disagreements would appear between oracle and human judgment, as noted in prior grammar-constrained systems #cite(24).
 
 == External Validity
 
-*Single language:* C0-specific syntax (especially `'` pointers) limits
-generalization to other languages.
+*Single language:* this reaserch test only one C0. These findings may not apply to other programming languages.
 
-*Educational subset:* C0 is pedagogical; industrial grammars are larger and
-more ambiguous.
+*Educational subset:* C0 is simplified languages designed for learning purposes. Real-World languages are much bigger and more complex. Therefore, results might be different from this research. 
+
 
 == Conclusion Validity
 
-*Ground-truth dependence:* Reference trees reflect the reference parser's derivation choices. Different
-parser implementations might choose alternate valid derivations, affecting
-structural scores without indicating model error.
+*Normalization effects:* Flattening and noise removal align reference and candidate trees but alter raw structures. Sensitivity to these options was not fully researched.
 
-*Normalization effects:* Flattening and noise removal align reference and
-candidate trees but alter raw structures; sensitivity to these options was not
-fully ablated.
-
-Despite these threats, the controlled multi-model design, dual metrics
-(structural + legality), and category-stratified analysis provide a credible
-snapshot of current LLM grammatical competence on a well-defined formal task.
+Despite these limitations, the study is still reliable as it tested multiple LLM models under the same conditions. Research uses two different matrices (structure + grammar correctness) and analyzes results across different task categories. All this gave solid results of how well current AI models handle formal grammar.
 
 // ============================================================
 //  CHAPTER 8 — CONCLUSION
