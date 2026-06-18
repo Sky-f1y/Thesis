@@ -594,35 +594,30 @@ The comparison pipeline has five stages:
 
 the `ted(A, B, vals)` function calculates how different two trees are. The comparison is done by calculating how many change is needed to turn one into another. This is done by following Selkow's editing model #cite(6).  Zhang and Shasha's Algorithm #cite(8) is even more effective, but wasn't needed here, as the trees are significantly small. typically around 500 nodes. For trees rooted at nodes $a$ and $b$:
 
-1. *Relabeling cost:* $0$ if node signatures match (non-terminal symbol or
-   terminal value), else $1$.
-2. *Forest alignment:* Let $m$ and $n$ be child counts. Dynamic programming
-   table $D[i][j]$ stores minimum cost to align the first $i$ children of $a$
-   with the first $j$ children of $b$:
+1. *Relabeling cost:* $0$ if nodes have the same lable (non-terminal symbol or terminal value), else $1$.
+2. *Forest alignment:* Let $m$ and $n$ be child counts. Dynamic programming    table $D[i][j]$ stores minimum cost to align the first $i$ children of $a$    with the first $j$ children of $b$:
    - Deletion: $D[i-1][j] + |T_{a,i}|$ (subtree size of $i$-th child of $a$)
    - Insertion: $D[i][j-1] + |T_{b,j}|$
    - Match/substitute: $D[i-1][j-1] + d(a_i, b_j)$
 3. *Total distance:* $d(a, b) = "relabel"(a,b) + D[m][n]$.
 
-The structural similarity reported in results is:
+The structural similarity is then calculated by:
 
 $ "structural" = max(0, 1 - "ted"(T_"ref", T_"cand") / (|"ref"| + |"cand"|)) $
 
 where $|"ref"|$ and $|"cand"|$ are total node counts after normalization.
 
-The grammar oracle operates independently on the candidate tree, enabling
-analysis of cases where legality is high but structural similarity is low
-(alternative valid derivations or invented paths for invalid inputs).
+Grammar checker runs separately. Here we see some interesting results. In some cases tree follows correct grammar rules but still gets sifferently structured tree. (alternative valid derivations or made-up invented paths for inputs)
 
 == Result Processing Pipeline
 
 #figure(
   image("figures/fig_pipeline.png", width: 82%),
-  caption: [End-to-end experimental pipeline. Each C0 program is sent to the five
-  models together with the grammar and format rules (`instruction.txt`) and, in
-  parallel, parsed by the reference compiler. The candidate and reference trees are
-  then compared by `tree_diff_v2`---which combines Selkow tree-edit distance with a
-  C0 grammar-validity oracle---to produce the per-model result tables and figures.],
+  caption: [full pipeline. Each C0 program is sent to the five
+  models along with the grammar and format rules (`instruction.txt`). In
+  parallel, code is parsed by the compiler. The candidate and reference trees are
+  then compared using `tree_diff_v2`. This uses the Selkow tree-edit distance with a
+  C0 grammar-validity oracle. The results are saved in tables and figures.],
 ) <fig-pipeline>
 
 Each CSV row records task id, file names, timestamp, all validity counts,
