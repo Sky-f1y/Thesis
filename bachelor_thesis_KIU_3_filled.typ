@@ -545,13 +545,9 @@ The script `tree_diff_v2.html` runs manually in browser. After comparison it dis
 
 == Mermaid Derivation Tree Structure
 
-Each tree is a directed graph in Mermaid `graph TD` syntax. Nodes use the form
-`id["label"]` with unique identifiers (ignored during comparison). Non-terminal
-labels are HTML-escaped angle-bracket symbols (`&lt;E&gt;`). Terminal labels are
-literal tokens. Edges `parent --> child` encode derivation; child order follows
-production right-hand side order. The root is always `&lt;prog&gt;`.
+Each derivation tree is drawn using the Mermaid tool. Each paragraph is a directed graph written in `graph TD` syntax. Nodes have an ID and a unique label `id["label"]`. this lables are ignored in comparisons. Non-terminal labels written with brackets (<>) with HTML labels (`&lt;E&gt;`). Terminals are written as they are. Edges `parent --> child` encode derivation. Last but not least, the root is always `&lt;prog&gt;`.
 
-Example fragment for deriving the letter `a` through `<Le>`:
+for example: deriving the letter `a` through `<Le>` would look like 
 
 ```
 n7["&lt;Le&gt;"]
@@ -559,79 +555,55 @@ n8["a"]
 n7 --> n8
 ```
 
-Incorrect encodings embed values in non-terminal labels (`&lt;Le&gt; = a`) or
-skip lexical expansion steps; the grammar oracle flags these as
-`collapsedLeaves` or `unexpanded` violations.
+Some common mistakes are stuffing values directly in grammar rule labels (⟨LE⟩ = a -> `&lt;Le&gt; = a`), or skipping full breakdowns. The system automatically detects those and flags them. Those mistakes get labeled as collapsed leaves(a node that should have been broken down further) or unexpanded(a step was missed).
 
 #figure(
   image("figures/fig_example_tree.png", width: 78%),
-  caption: [Derivation tree for the statement `c = a + b` under the C0 grammar.
-  Non-terminals (blue) expand down to terminal leaves (grey). Note the
-  left-recursive `<E> -> <E> + <T>` production and the full lexical expansion of
-  each identifier through `<id> -> <Na> -> <Le>`---the level of detail every model
-  is required to reproduce.],
+  caption: [Derivation tree for the statement `c = a + b` under the C0 grammar. Non-terminals (blue) expand down to terminal leaves (grey). Note the full lexical expansion of each identifier is required.],
 ) <fig-example-tree>
 
 == Reference Compiler Outputs
 
-The reference compiler emits one Mermaid file per parsed program. Reference trees in
-`generated_trees/` contain the authoritative derivation paths chosen by the
-compiler's parser. File naming maps task numbers to descriptive slugs (e.g.,
-Task 9 → `09_single_int_arithmetic_add.mmd`). Plain-text tree dumps (`.tree.txt`)
-are also available for manual inspection.
+The reference compiler automatically generates one tree diagram per program. These files were stored in 'generated_trees' and represent the official derivation trees. Each file is named with its task number and short description. EX. 09_single_int_arithmetic_add.mmd. Plain text versions are also available to read manually (`.tree.txt`).
 
 == Tree Comparison Tool (`tree_diff_v2.html`)
 
-The comparison pipeline proceeds in five stages:
+The comparison pipeline has five stages:
 
-+ *Parse:* Extract nodes and edges from Mermaid text; classify each node as
-  non-terminal (`<Sym>`), terminal literal, collapsed non-terminal leaf, or noise.
-+ *Normalize:* Optionally remove noise (`&nbsp;`, `~`), merge collapsed leaves,
-  and flatten left-recursive sequence non-terminals (`StS`, `VaDS`, `DiS`, etc.).
-+ *Validate:* Walk the candidate tree; check each internal node against the C0
-  production table encoded in JavaScript (`PRODUCTIONS`, `SEQ_DEF`).
-+ *Compare:* Compute Selkow distance and auxiliary metrics (border, edge, node
-  Dice coefficients).
-+ *Report:* Display gauges, issue lists, side-by-side rendered trees, and CSV
-  export.
++ *Parse:* extracts all nodes and edges and identifies the. It searches if it's in the grammar rules. Then classifies them as non-terminal, terminal literal, collapsed non-terminal leaf, or noise.
++ *Normalize:* cleans up by removing some noise, merging collapsed leaves, and flattening non-terminal nodes.
++ *Validate:* Checks every node in the tree to the ofiicial C0 grammar encoded in JavaScript (`PRODUCTIONS`, `SEQ_DEF`).
++ *Compare:* Compares the tree to the official one. Computes Selkow distance and auxiliary metrics (border, edge, node Dice coefficients).
++ *Report:* shows the results visually and exports data into a CSV file.
 
 == Selkow Algorithm Implementation
 
-The `ted(A, B, vals)` function implements ordered tree edit distance with
-memoization, following Selkow's editing model #cite(6). Zhang and Shasha's
-algorithm #cite(8) offers superior asymptotic bounds for large trees but was not
-required given derivation-tree sizes in this corpus (typically fewer than 500
-nodes per reference tree). For trees rooted at nodes $a$ and $b$:
+the `ted(A, B, vals)` function calculates how different two trees are. The comparison is done by calculating how many change is needed to turn one into another. This is done by following Selkow's editing model #cite(6).  Zhang and Shasha's Algorithm #cite(8) is even more effective, but wasn't needed here, as the trees are significantly small. typically around 500 nodes. For trees rooted at nodes $a$ and $b$:
 
-1. *Relabeling cost:* $0$ if node signatures match (non-terminal symbol or
-   terminal value), else $1$.
-2. *Forest alignment:* Let $m$ and $n$ be child counts. Dynamic programming
-   table $D[i][j]$ stores minimum cost to align the first $i$ children of $a$
-   with the first $j$ children of $b$:
+1. *Relabeling cost:* $0$ if nodes have the same lable (non-terminal symbol or terminal value), else $1$.
+2. *Forest alignment:* Let $m$ and $n$ be child counts. Dynamic programming    table $D[i][j]$ stores minimum cost to align the first $i$ children of $a$    with the first $j$ children of $b$:
    - Deletion: $D[i-1][j] + |T_{a,i}|$ (subtree size of $i$-th child of $a$)
    - Insertion: $D[i][j-1] + |T_{b,j}|$
    - Match/substitute: $D[i-1][j-1] + d(a_i, b_j)$
 3. *Total distance:* $d(a, b) = "relabel"(a,b) + D[m][n]$.
 
-The structural similarity reported in results is:
+The structural similarity is then calculated by:
 
 $ "structural" = max(0, 1 - "ted"(T_"ref", T_"cand") / (|"ref"| + |"cand"|)) $
 
 where $|"ref"|$ and $|"cand"|$ are total node counts after normalization.
 
-The grammar oracle operates independently on the candidate tree, enabling
-analysis of cases where legality is high but structural similarity is low
-(alternative valid derivations or invented paths for invalid inputs).
+Grammar checker runs separately. Here we see some interesting results. In some cases tree follows correct grammar rules but still gets sifferently structured tree. (alternative valid derivations or made-up invented paths for inputs)
 
 == Result Processing Pipeline
 
 #figure(
   image("figures/fig_pipeline.png", width: 82%),
-  caption: [End-to-end experimental pipeline. Each C0 program is sent to the five
-  models together with the grammar and format rules (`instruction.txt`) and, in
-  parallel, parsed by the reference compiler. The candidate and reference trees are
-  then compared by `tree_diff_v2`---which combines Selkow tree-edit distance with a
-  C0 grammar-validity oracle---to produce the per-model result tables and figures.],
+  caption: [full pipeline. Each C0 program is sent to the five
+  models along with the grammar and format rules (`instruction.txt`). In
+  parallel, code is parsed by the compiler. The candidate and reference trees are
+  then compared using `tree_diff_v2`. This uses the Selkow tree-edit distance with a
+  C0 grammar-validity oracle. The results are saved in tables and figures.],
 ) <fig-pipeline>
 
 Each CSV row records task id, file names, timestamp, all validity counts,
