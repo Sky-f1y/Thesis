@@ -174,18 +174,16 @@ The Purpose of our research is to test the capabilities of Large Language Models
 + To analyze performance across standard, pointer and out-of-grammar categories.
 + To find recurring error patterns and interpret results in terms of formal understanding versus pattern matching.
 
-The subject of this research is syntactic derivation of C0 programs, with derivation trees represented as directed Mermaid graphs. Scope boundaries:
+The subject of this research is syntactic derivation of C0 programs, with derivation trees represented as directed Mermaid graphs. Scope boundaries are:
 
 - *Language:* C0, following the grammar of Paul et al. #cite(46).
-- *Output format:* Mermaid `graph TD` per the v2 format specification.
-- *Models:* ChatGPT (GPT-5.5), Gemini 3.5 Flash, Claude Sonnet 4.6,
-  Grok 4.6 Fast, DeepSeek-V3.
-- *Test corpus:* 44 in-grammar programs, 4 pointer programs, 3 out-of-grammar
-  programs (`accepted C0 lines.txt`).
+- *Output format:* Mermaid `graph TD` which follows the format specification rules.
+- *Models:* ChatGPT (GPT-5.5), Gemini 3.5 Flash, Claude Sonnet 4.6,  Grok 4.6 Fast, DeepSeek-V3.
+- *Test corpus:* 44 in-grammar programs, 4 pointer programs, 3 out-of-grammar programs.
 - *Ground truth:* Reference trees in `generated_trees/` from the reference C0 compiler.
 - *Exclusions:* Semantic correctness, runtime behavior, and code optimization.
 
-The pipeline which we have built generated easily readable, reusable outputs using mermaid diagrams and it also exposed where models break down. Invented symbols, that don't exist in the grammar, incomplete lexical expansions, confusion in rules related to pointer and forced invalid derivations. None of this is visible in typical coding benchmarks, that indicates that they are leaning on pattern matching and they lack structural understanding of the grammar. If we manage to generate reliable derivation trees, it can have real use cases like teaching compiler concepts, automatically grading exercises and even evaluating AI systems formally.
+The pipeline which we have built generated easily readable and reusable outputs using mermaid diagrams. It also exposed where models break down. Invented symbols, that don't exist in the grammar, incomplete lexical expansions, confusion in rules related to pointer and forced invalid derivations. None of this is show up in typical coding benchmarks. That indicates that LLMs are leaning on pattern matching and they lack structural understanding of the grammar. If we manage to generate reliable derivation trees, it can have real use cases like teaching compiler concepts, automatically grading exercises and even evaluating AI systems formally.
 
 
 // ============================================================
@@ -235,6 +233,8 @@ Hou et al.'s systematic literature review of LLMs for software engineering found
 
 == Grammar-Constrained Decoding and Reliable Structured Generation
 
+
+
 A parallel research line asks how to *force* LLMs to respect grammars during
 decoding rather than evaluating free-form outputs post hoc. Poesia et al.'s
 Synchromesh framework applies Constrained Semantic Decoding so that partial
@@ -254,7 +254,7 @@ from rules alone---the setting of this thesis. The unconstrained protocol is
 deliberately harder and reflects how students or instructors might query an AI
 assistant without attaching a constrained decoder.
 
-== AI Reasoning versus Pattern Matching
+== AI Reasoning vs Pattern Matching
 
 Whether LLM behavior constitutes reasoning or sophisticated pattern matching is
 actively debated. Wei et al. show that chain-of-thought prompting elicits
