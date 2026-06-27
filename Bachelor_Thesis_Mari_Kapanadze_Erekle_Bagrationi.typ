@@ -292,10 +292,7 @@ Structural similarity must be paired with a grammar-validity oracle, as in this 
 
 == Related Work on LLM Grammar and Parse-Structure Evaluation
 
-Table @tbl-related-work compares representative prior studies to the present
-thesis. No prior benchmark identified in this review requires models to emit
-*complete derivation trees* for a fixed CFG under a standardized graph encoding
-with compiler-generated ground truth.
+Table @tbl-related-work compares representative prior studies to the present thesis. After reviewing related works, none of them asked LLMs to generate *complete derivation trees*.  That is, complete step-by-step parse trees showing exactly how a piece of text was built according to a fixed set of grammar rules.
 
 #figure(
   table(
@@ -314,12 +311,7 @@ with compiler-generated ground truth.
   caption: [Comparison of related evaluation paradigms.],
 ) <tbl-related-work>
 
-The closest methodological neighbors are syntax probes (CodeSyntax, SyntaxEval)
-and zero-shot parsing evaluations (Ma et al.) #cite(20, 22, 23). Those works
-test whether models *encode* or *recover* syntactic relations; they do not require
-step-by-step exposition of every production in a course grammar. Constrained
-decoding systems #cite(24, 25, 26) guarantee validity by construction but
-evaluate engineering mechanisms rather than unconstrained grammatical knowledge.
+The closest methodological neighbors are syntax probes (CodeSyntax, SyntaxEval) and zero-shot parsing evaluations (Ma et al.) #cite(20, 22, 23). Those works test whether models *encode* or *recover* syntactic relations. They do not require step-by-step exposition of every production in a course grammar. Constrained decoding systems #cite(24, 25, 26) guarantee validity by construction but evaluate engineering mechanisms rather than unconstrained grammatical knowledge.
 
 == Gap in the Literature and Contribution of This Thesis
 
