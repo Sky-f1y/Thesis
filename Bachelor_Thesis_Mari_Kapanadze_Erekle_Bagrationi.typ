@@ -276,36 +276,19 @@ on simple programs alone.
 
 == Tree Edit Distance and Structural Comparison
 
-Comparing labeled trees requires metrics beyond string edit distance. Tai (1979)
-introduced the tree-to-tree correction problem with insert, delete, and relabel
-operations on ordered trees #cite(7). Zhang and Shasha (1989) gave a faster
-$O(n^4)$ dynamic programming algorithm that became the standard reference
-implementation for ordered tree edit distance #cite(8). Bille's survey classifies
-subsequent algorithms---including bounded-distance methods of Touzet #cite(40)
-and worst-case optimal algorithms of Demaine et al. #cite(10)---and documents
-applications from XML matching to program differencing #cite(9). Pawlik and
-Augsten's RTED unifies several strategies and remains among the fastest exact
-implementations #cite(11).
+Comparing trees(branching data structures with labeled nodes) is harder than comparing simple strings. Tai (1979) was the first person to introduce the tree-to-tree correction problem. This method uses three basic operations: insertion, delition and relabeling #cite(7). Zhang and Shasha (1989) later found a much faster way to compare $O(n^4)$. They used dynamic programming for this, and their method became the standard #cite(8). A later survey by Bille collected all the algorithms.  including more efficient ones by Touzet #cite(40) and Demaine et al. #cite(10). His survey showed where these tree-comparison methods get used in practice, like matching XML files or tracking changes in code #cite(9). Pawlik and Augsten's tool, called RTED, combines the best ideas from several of these approaches and is still one of the fastest exact solutions available #cite(11).
 
-Selkow (1977) proposed a related ordered editing model with a simpler recursive
-structure that is sufficient for many practical tree differencing tasks and is
-implemented in this thesis's comparison tool #cite(6). The normalized similarity
-used here,
+Selkow (1977) proposed a related ordered editing model with a simpler recursive structure. This algorithm is sufficient for many practical tree differencing tasks and is implemented in this thesis's comparison tool #cite(6). The normalized similarity used here,
 
 $ "similarity" = max(0, 1 - d(T_A, T_B) / (|T_A| + |T_B|)) $ <eq-similarity>
 
-where $d$ is Selkow distance and $|T|$ counts nodes, follows common practice in
-information retrieval and program differencing #cite(6, 9).
+where $d$ is Selkow distance and $|T|$ counts nodes. It follows common practice in information retrieval and program differencing #cite(6, 9).
 
-*Advantages:* global structural alignment; tolerance for localized insertions and
-deletions; continuous scores suitable for aggregation.
+*Advantages:* global structural alignment. tolerance for localized insertions and deletions. continuous scores suitable for aggregation.
 
-*Limitations:* sensitivity to tree size (spurious large subtrees dominate
-distance); equal relabeling cost for all symbols; inability to credit alternative
-but equally valid derivations; dependence on normalization choices #cite(9).
+*Limitations:* sensitivity to tree size (spurious large subtrees dominate distance). equal relabeling cost for all symbols. inability to credit alternative but equally valid derivations. dependence on normalization choices #cite(9).
 
-Structural similarity must therefore be paired with a grammar-validity oracle, as
-in this thesis's `tree_diff_v2.html` implementation.
+Structural similarity must be paired with a grammar-validity oracle, as in this thesis's tree difference implementation.
 
 == Related Work on LLM Grammar and Parse-Structure Evaluation
 
