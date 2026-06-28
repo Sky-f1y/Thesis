@@ -315,29 +315,20 @@ The closest methodological neighbors are syntax probes (CodeSyntax, SyntaxEval) 
 
 == Gap in the Literature and Contribution of This Thesis
 
-Three gaps motivate this work:
+Three gaps motivatesd this work:
 
-+ *Evaluation target:* Existing benchmarks emphasize executable code or AST
-  relations, not fully expanded derivation trees tied to an explicit CFG.
-+ *Ground truth:* Few studies compare LLM outputs to parser-generated reference
-  trees from a real compiler pipeline #cite(33).
-+ *Failure analysis:* Pointer disambiguation and out-of-grammar inputs are rarely
-  tested systematically in grammar-centric evaluations.
++ *Evaluation target:* Existing benchmarks emphasize executable code or AST relations. They do not fully expanded derivation trees tied to an explicit CFG.
++ *Ground truth:* Few studies compare LLM outputs to parser-generated reference trees from a real compiler pipeline #cite(33).
++ *Failure analysis:* Pointer disambiguation and out-of-grammar inputs are rarely tested systematically. This is a notable gap in grammar-centric evaluations.
 
 This thesis contributes:
 
-+ A reproducible protocol (grammar document, Mermaid format standard, 51-program
-  corpus, automated comparison pipeline).
++ A reproducible protocol (grammar document, Mermaid format standard, 51-program corpus, automated comparison pipeline).
 + Empirical comparison of five contemporary LLMs under identical prompting.
-+ Dual metrics combining Selkow structural similarity with a production-rule
-  validity oracle.
-+ Category-stratified analysis (standard, pointer, out-of-grammar) linking results
-  to formal understanding versus pattern matching #cite(27, 20).
++ Dual metrics combining Selkow structural similarity with a production-rule validity oracle.
++ Category-stratified analysis (standard, pointer, out-of-grammar) linking results to formal understanding vs pattern matching #cite(27, 20).
 
-By positioning derivation-tree generation between compiler theory #cite(3) and
-LLM code evaluation #cite(12, 15), the study offers a falsifiable test of whether
-models can act as informal parsers when given explicit rules a capability
-increasingly assumed but rarely measured in educational deployments.
+This study sits at the intersection of compiler theory #cite(3) and LLM code evaluation #cite(12, 15). It tests whether language models can act as informal parsers when given explicit grammar rules. This capability is increasingly assumed in educational settings, but rarely measured in a rigorous, falsifiable way.
 
 // ============================================================
 //  CHAPTER 3 — METHODOLOGY
@@ -347,7 +338,7 @@ increasingly assumed but rarely measured in educational deployments.
 
 == Research Design
 
-The independent variable is the LLM and all other conditions remain unchanged. The evaluated systems are general-purpose transformer-based models #cite(13, 14)accessed via their public chat interfaces.
+The independent variable is the LLM and all other conditions remain unchanged. The evaluated systems are general-purpose transformer-based models #cite(13, 14)accessed using their public chat interfaces.
 
 === Experimental Protocol
 For each task each model has recived(`instruction.txt`):
@@ -608,7 +599,7 @@ Summary of key findings (all 51 tasks):
   caption: [Category breakdown computed from CSV results files.],
 )
 
-On normal tasks, Gemini scored best for structure similarity (0.908). Claude was right behind (0.888) but needed fewer fixes. Pointer tasks were hard for every model. None of them got a single pointer tree correct. For out-of-grammar, models got moderate scores. They all made up rules similar to the existing ones, but not quite correct. These results made sense as none of them were given rules for those tasks.
+On normal tasks, Gemini scored best for structure similarity (0.908). Claude was right behind (0.888) but needed fewer fixes. Pointer tasks were hard for every model. None of them got a single pointer tree correct. For out-of-grammar, models got moderate scores, they all made up rules similar to the existing ones, but not quite correct. These results made sense as none of them were given rules for those tasks.
 
 == Error Type Totals
 
